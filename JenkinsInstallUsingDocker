@@ -1,0 +1,32 @@
+sudo apt-get update
+
+sudo apt-get install -y docker.io
+
+sudo systemctl status docker
+
+sudo docker pull jenkins/jenkins:lts-jdk17
+
+sudo docker run -d -p 8080:8080 -p 50000:50000 --name jenkins-master -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts-jdk17
+
+sudo docker run -d -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 --name jenkins-master --restart=on-failure jenkins/jenkins:lts-jdk17
+
+Here’s what each part of the command does:
+
+-d: Runs the container in detached mode (in the background).
+-p 8080:8080: Maps port 8080 of the container to port 8080 on the host, so you can access Jenkins through http://<your-server-ip>:8080.
+-p 50000:50000: Maps the JNLP agent communication port to port 50000 on the host, allowing external agents to connect to Jenkins running inside the Docker container.
+--name jenkins-master: Names the container jenkins-master.
+-v jenkins_home:/var/jenkins_home: Creates a Docker volume jenkins_home to persist Jenkins data, mapped to the Jenkins home directory in the container.
+
+The initial admin password can be found by running:
+
+sudo docker exec jenkins-master cat /var/jenkins_home/secrets/initialAdminPassword
+===================================================
+
+sudo docker exec -it jenkins-master /bin/bash - To Execute Commnads Inside Container
+
+View Jenkins Configuration Files
+Jenkins configuration files are typically stored in /var/jenkins_home/. You can navigate through the configuration files if you need to view or edit any settings (though most settings should be managed through the Jenkins UI):
+
+cd /var/jenkins_home
+ls
